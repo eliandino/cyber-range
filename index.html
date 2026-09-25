@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cyber Range · Progress</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Source+Sans+3:wght@400;600&family=Cormorant+Garamond:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F1B2D; --panel:#16263D; --line:#2A3F5E; --text:#DCE6F2; --muted:#8FA3BD;
+  --azure:#4AA3FF; --brass:#E0B04A; --brass-dim:#6B5628;
+  --head:"Chakra Petch",system-ui,sans-serif; --body:"Source Sans 3",system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--ink);color:var(--text);font:17px/1.55 var(--body)}
+button,input{font:inherit}
+:focus-visible{outline:2px solid var(--azure);outline-offset:2px}
+
+header{max-width:1100px;margin:0 auto;padding:40px 24px 8px}
+header h1{font:700 clamp(2rem,5vw,3.2rem)/1.05 var(--head);margin:0;letter-spacing:.01em}
+header p{color:var(--muted);margin:10px 0 0;max-width:60ch}
+
+.meter{max-width:1100px;margin:24px auto 0;padding:0 24px}
+.meter-track{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.meter-fill{height:100%;background:var(--brass);width:0;transition:width .4s ease}
+.meter-text{display:flex;justify-content:space-between;color:var(--muted);font-size:.95rem;margin-top:8px}
+
+main{max-width:1100px;margin:0 auto;padding:28px 24px 64px;display:grid;grid-template-columns:300px 1fr;gap:32px;align-items:start}
+
+/* The clearance ladder: one rung per module */
+.ladder{position:sticky;top:calc(16px + env(safe-area-inset-top,0px));display:flex;flex-direction:column-reverse;gap:6px}
+.rung{display:grid;grid-template-columns:44px 1fr;align-items:center;gap:12px;text-align:left;
+  background:transparent;border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--text);cursor:pointer}
+.rung:hover{border-color:var(--muted)}
+.rung[aria-current="true"]{border-color:var(--azure);background:var(--panel)}
+.rung .lvl{font:600 1.05rem var(--head);width:44px;height:44px;display:grid;place-items:center;border-radius:50%;
+  border:2px solid var(--line);color:var(--muted)}
+.rung.partial .lvl{border-color:var(--azure);color:var(--azure)}
+.rung.done .lvl{background:var(--brass);border-color:var(--brass);color:var(--ink)}
+.rung .name{font-weight:600;line-height:1.25}
+.rung .count{display:block;color:var(--muted);font-size:.85rem;font-weight:400}
+.ladder-cap{font:600 .95rem var(--head);color:var(--muted);padding:4px 2px 0}
+
+.module{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:28px}
+.module h2{font:700 1.7rem/1.15 var(--head);margin:0 0 6px}
+.module .sub{color:var(--muted);margin:0 0 20px}
+.labs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.labs label{display:flex;gap:14px;align-items:flex-start;padding:12px 10px;border-radius:6px;cursor:pointer}
+.labs label:hover{background:rgba(255,255,255,.03)}
+.labs input{appearance:none;flex:none;width:22px;height:22px;margin-top:2px;border:2px solid var(--muted);border-radius:4px;display:grid;place-items:center;cursor:pointer}
+.labs input:checked{background:var(--brass);border-color:var(--brass)}
+.labs input:checked::after{content:"";width:6px;height:11px;border:solid var(--ink);border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.labs input:checked + span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--brass-dim)}
+.labs .project{font-weight:600}
+.labs .project::before{content:"Portfolio project: ";color:var(--brass)}
+.nav{display:flex;justify-content:space-between;margin-top:22px;gap:12px}
+.btn{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:9px 16px;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.primary{background:var(--brass);border-color:var(--brass);color:var(--ink);font-weight:600}
+
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.tools .note{color:var(--muted);font-size:.9rem;flex-basis:100%}
+
+/* Certificate */
+.cert-zone{max-width:1100px;margin:0 auto;padding:0 24px 80px}
+.cert-zone h2{font:700 1.5rem var(--head);margin:0 0 6px}
+.cert-zone .sub{color:var(--muted);margin:0 0 18px;max-width:60ch}
+.cert-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.cert-controls input{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:9px 12px;min-width:240px}
+.locked{border:1px dashed var(--line);border-radius:10px;padding:28px;color:var(--muted)}
+.cert{background:#FBF7EE;color:#1B2433;border-radius:4px;padding:clamp(24px,5vw,56px);position:relative;
+  aspect-ratio:1.414/1;max-width:900px;display:flex;flex-direction:column;justify-content:space-between;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);outline:10px solid #FBF7EE;outline-offset:-22px;border:2px solid #1B2433}
+.cert .issuer{font:600 clamp(.8rem,1.6vw,1rem) var(--head);letter-spacing:.14em;color:#6B5628}
+.cert h3{font:600 clamp(1.6rem,4.5vw,3.2rem)/1 "Cormorant Garamond",Georgia,serif;margin:.3em 0 0}
+.cert .to{font-style:italic;font:500 clamp(1rem,2vw,1.3rem) "Cormorant Garamond",Georgia,serif;margin:1em 0 .2em;color:#4A5568}
+.cert .who{font:700 clamp(1.8rem,5vw,3.4rem)/1.05 var(--head);margin:0;border-bottom:2px solid #1B2433;padding-bottom:.15em;display:inline-block}
+.cert .what{max-width:52ch;margin:.9em 0 0;font-size:clamp(.8rem,1.6vw,1rem);line-height:1.5}
+.cert .foot{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;font-size:clamp(.7rem,1.4vw,.9rem)}
+.cert .foot b{display:block;font-family:var(--head)}
+.cert svg{width:clamp(70px,13vw,120px);height:auto}
+
+@media (max-width:820px){
+  main{grid-template-columns:1fr}
+  .ladder{position:static;flex-direction:row;overflow-x:auto;padding-bottom:6px}
+  .rung{grid-template-columns:1fr;justify-items:center;min-width:70px;padding:8px}
+  .rung .name{display:none}
+  .ladder-cap{display:none}
+  .module{padding:20px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  body{background:#fff}
+  header,.meter,main,.cert-zone>h2,.cert-zone>.sub,.cert-controls,.locked{display:none!important}
+  .cert-zone{padding:0}
+  .cert{box-shadow:none;max-width:none;width:100%}
+  @page{size:A4 landscape;margin:10mm}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Cyber Range</h1>
+  <p>White-hat security on Azure, with Python. Eight levels, eight portfolio projects. Clear every level to issue your certificate.</p>
+</header>
+
+<div class="meter" aria-live="polite">
+  <div class="meter-track"><div class="meter-fill" id="fill"></div></div>
+  <div class="meter-text"><span id="meterLeft"></span><span id="meterRight"></span></div>
+</div>
+
+<main>
+  <nav class="ladder" id="ladder" aria-label="Modules"></nav>
+  <section>
+    <div class="module" id="module"></div>
+    <div class="tools">
+      <button class="btn" id="exportBtn">Export progress</button>
+      <button class="btn" id="importBtn">Import progress</button>
+      <input type="file" id="importFile" accept="application/json" hidden>
+      <button class="btn" id="resetBtn">Reset</button>
+      <span class="note">Progress saves in this browser. Export it and commit <code>progress.json</code> to your repo as a backup.</span>
+    </div>
+  </section>
+</main>
+
+<section class="cert-zone" id="certZone"></section>
+
+<script>
+const MODULES = [
+  {name:"Foundations", tag:"Git, Linux, Python", labs:[
+    "Install Git, VS Code, Python and push this repo to GitHub",
+    "Linux command line: files, permissions, processes, networking",
+    "Python basics: functions, files, argparse, socket",
+    "Complete OverTheWire Bandit levels 0–10"],
+    project:"Python TCP port scanner with threading and JSON output"},
+  {name:"Azure Basics", tag:"VMs, NSGs, Azure CLI", labs:[
+    "Create Azure account and a budget alert",
+    "Deploy a Linux VM with SSH keys, locked to your IP",
+    "Deploy a Windows VM, RDP locked to your IP; try Bastion or JIT",
+    "Rebuild the Linux VM using only the Azure CLI"],
+    project:"Hardened VM deployed with a CLI script, plus cleanup script"},
+  {name:"Networking & Recon", tag:"Nmap, Wireshark", labs:[
+    "Study TCP/IP, ports, DNS, HTTP",
+    "Build a two-VM lab: attacker and target",
+    "Nmap scans against your own target VM",
+    "Capture and analyze a scan in Wireshark"],
+    project:"Recon report on your own lab"},
+  {name:"SOC Home Lab", tag:"Sentinel, KQL", labs:[
+    "Create a Log Analytics workspace and enable Sentinel",
+    "Deploy the honeypot VM and collect failed-logon events",
+    "Write KQL queries by IP, username and time",
+    "Build a workbook attack map, then harden and compare"],
+    project:"Azure honeypot SOC with before/after metrics"},
+  {name:"Python Security Tools", tag:"Parsing, hashing, threat intel", labs:[
+    "Brute-force detector for auth logs",
+    "File integrity monitor with SHA-256 baselines",
+    "Threat-intel IP lookup with the key in an env variable",
+    "pytest tests for every tool"],
+    project:"Packaged security CLI toolkit with CI"},
+  {name:"Web App Security", tag:"OWASP Top 10, Burp", labs:[
+    "Deploy OWASP Juice Shop on your own VM",
+    "Learn Burp Suite proxy and Repeater",
+    "Solve a Juice Shop challenge in each OWASP category",
+    "Write fixes for three findings"],
+    project:"Web app findings report with CVSS and remediation"},
+  {name:"Automation & DevSecOps", tag:"Bicep, GitHub Actions", labs:[
+    "Rewrite your VM as a Bicep template",
+    "Set up OIDC login from GitHub Actions to Azure",
+    "Deploy and destroy workflows",
+    "Enable CodeQL, Dependabot and secret scanning"],
+    project:"One-command lab deployment pipeline"},
+  {name:"Capstone", tag:"Attack, detect, report", labs:[
+    "Build the vulnerable environment with Bicep",
+    "Attack it: recon to privilege escalation (your lab only)",
+    "Write three Sentinel rules that catch your attack",
+    "Record a 5-minute demo walkthrough"],
+    project:"Professional pentest report with detection coverage"}
+];
+const KEY = "cyber-range-progress-v1";
+let state = load();
+let current = firstIncomplete();
+
+function blank(){ return {checked:{}, name:"", issued:null}; }
+function load(){
+  try{ const s = JSON.parse(localStorage.getItem(KEY)); return s && s.checked ? s : blank(); }
+  catch(e){ return blank(); }
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function items(i){ return [...MODULES[i].labs, MODULES[i].project]; }
+function id(i,j){ return i+"-"+j; }
+function doneCount(i){ return items(i).filter((_,j)=>state.checked[id(i,j)]).length; }
+function totals(){
+  let d=0,t=0; MODULES.forEach((_,i)=>{ d+=doneCount(i); t+=items(i).length; }); return {d,t};
+}
+function firstIncomplete(){
+  const i = MODULES.findIndex((_,i)=>doneCount(i) < items(i).length);
+  return i === -1 ? MODULES.length-1 : i;
+}
+function esc(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function renderLadder(){
+  const el = document.getElementById("ladder");
+  el.innerHTML = MODULES.map((m,i)=>{
+    const d = doneCount(i), t = items(i).length;
+    const cls = d===t ? "done" : d>0 ? "partial" : "";
+    return `<button class="rung ${cls}" data-i="${i}" aria-current="${i===current}">
+      <span class="lvl">${i+1}</span>
+      <span class="name">${esc(m.name)}<span class="count">${d} of ${t} done</span></span>
+    </button>`;
+  }).join("") ;
+  el.insertAdjacentHTML("beforeend", `<div class="ladder-cap">Clearance levels</div>`);
+  el.querySelectorAll(".rung").forEach(b=>b.onclick=()=>{ current=+b.dataset.i; render(); });
+}
+
+function renderModule(){
+  const m = MODULES[current];
+  const list = items(current).map((txt,j)=>{
+    const isProj = j === m.labs.length;
+    const k = id(current,j);
+    return `<li><label><input type="checkbox" data-k="${k}" ${state.checked[k]?"checked":""}>
+      <span class="${isProj?"project":""}">${esc(txt)}</span></label></li>`;
+  }).join("");
+  document.getElementById("module").innerHTML = `
+    <h2>Level ${current+1}: ${esc(m.name)}</h2>
+    <p class="sub">${esc(m.tag)}. Details in <code>modules/0${current+1}-…/README.md</code></p>
+    <ul class="labs">${list}</ul>
+    <div class="nav">
+      <button class="btn" id="prev" ${current===0?"disabled":""}>Previous level</button>
+      <button class="btn" id="next" ${current===MODULES.length-1?"disabled":""}>Next level</button>
+    </div>`;
+  document.querySelectorAll(".labs input").forEach(cb=>cb.onchange=()=>{
+    if(cb.checked) state.checked[cb.dataset.k]=true; else delete state.checked[cb.dataset.k];
+    if(!allDone()) state.issued=null;
+    save(); renderLadder(); renderMeter(); renderCert();
+  });
+  document.getElementById("prev").onclick=()=>{ current--; render(); };
+  document.getElementById("next").onclick=()=>{ current++; render(); };
+}
+
+function renderMeter(){
+  const {d,t} = totals();
+  document.getElementById("fill").style.width = (d/t*100)+"%";
+  const levels = MODULES.filter((_,i)=>doneCount(i)===items(i).length).length;
+  document.getElementById("meterLeft").textContent = `${levels} of ${MODULES.length} levels cleared`;
+  document.getElementById("meterRight").textContent = `${Math.round(d/t*100)}%`;
+}
+
+function allDone(){ const {d,t}=totals(); return d===t; }
+
+function credentialId(name, date){
+  let h = 2166136261;
+  for(const c of name+date){ h ^= c.charCodeAt(0); h = Math.imul(h,16777619); }
+  return "CR-" + (h>>>0).toString(36).toUpperCase().padStart(7,"0");
+}
+
+function seal(){
+  return `<svg viewBox="0 0 120 120" aria-hidden="true">
+    <g fill="none" stroke="#B08A2E" stroke-width="2">
+      <circle cx="60" cy="60" r="54"/><circle cx="60" cy="60" r="46" stroke-dasharray="2 4"/>
+    </g>
+    <path d="M60 28 L84 38 V60 C84 76 73 87 60 92 C47 87 36 76 36 60 V38 Z" fill="#E0B04A" stroke="#6B5628" stroke-width="2"/>
+    <path d="M49 60 l8 8 l15 -16" fill="none" stroke="#1B2433" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+function renderCert(){
+  const z = document.getElementById("certZone");
+  if(!allDone()){
+    const {d,t} = totals();
+    z.innerHTML = `<h2>Certificate of completion</h2>
+      <div class="locked">Locked. Clear all eight levels to issue your certificate. ${t-d} item${t-d===1?"":"s"} to go.</div>`;
+    return;
+  }
+  if(!state.issued){
+    z.innerHTML = `<h2>Certificate of completion</h2>
+      <p class="sub">Every level is cleared. Enter your name as it should appear, then issue it.</p>
+      <div class="cert-controls">
+        <input id="certName" placeholder="Your full name" value="${esc(state.name)}" aria-label="Your full name">
+        <button class="btn primary" id="issueBtn">Issue certificate</button>
+      </div>`;
+    document.getElementById("issueBtn").onclick=()=>{
+      const n = document.getElementById("certName").value.trim();
+      if(!n){ document.getElementById("certName").focus(); return; }
+      state.name = n; state.issued = new Date().toISOString().slice(0,10); save(); renderCert();
+    };
+    return;
+  }
+  const dateTxt = new Date(state.issued+"T12:00:00").toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"});
+  z.innerHTML = `<h2>Certificate of completion</h2>
+    <p class="sub">Issued. Print it or save it as a PDF, and link it from your portfolio README.</p>
+    <div class="cert-controls">
+      <button class="btn primary" id="printBtn">Print or save as PDF</button>
+      <button class="btn" id="reissueBtn">Change name</button>
+    </div>
+    <article class="cert">
+      <div>
+        <div class="issuer">CYBER RANGE · SELF-DIRECTED PROGRAM</div>
+        <h3>Certificate of Completion</h3>
+        <p class="to">This certifies that</p>
+        <p class="who">${esc(state.name)}</p>
+        <p class="what">has completed all eight levels of White-Hat Security on Azure, building and documenting portfolio projects in Azure infrastructure, network reconnaissance, SOC operations with Microsoft Sentinel, Python security tooling, web application testing, DevSecOps automation, and a full attack-and-detect capstone.</p>
+      </div>
+      <div class="foot">
+        <div><b>${dateTxt}</b>Date issued</div>
+        ${seal()}
+        <div style="text-align:right"><b>${credentialId(state.name,state.issued)}</b>Credential ID</div>
+      </div>
+    </article>`;
+  document.getElementById("printBtn").onclick=()=>window.print();
+  document.getElementById("reissueBtn").onclick=()=>{ state.issued=null; save(); renderCert(); };
+}
+
+document.getElementById("exportBtn").onclick=()=>{
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "progress.json"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
+document.getElementById("importFile").onchange=async e=>{
+  const f = e.target.files[0]; if(!f) return;
+  try{ const s = JSON.parse(await f.text()); if(!s.checked) throw 0; state = s; save(); current = firstIncomplete(); render(); }
+  catch(err){ alert("That file isn't a Cyber Range progress export. Choose a progress.json exported from this tracker."); }
+  e.target.value = "";
+};
+document.getElementById("resetBtn").onclick=()=>{
+  if(confirm("Clear all progress in this browser? Export first if you want a backup.")){ state = blank(); save(); current = 0; render(); }
+};
+
+function render(){ renderLadder(); renderModule(); renderMeter(); renderCert(); }
+render();
+</script>
+</body>
+</html>
